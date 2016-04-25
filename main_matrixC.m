@@ -91,46 +91,90 @@ if settings.red_prec % if we have to reduce the precision
     parameters.intRate = intRate;
     parameters.b = settings.b;
     
-    % reduce the precision of Wout
-    parameters.D = ESN.Wout;
-    parameters.mat = 'Wout';
-    res = set_precision(parameters);
-    ESN.Wout = res.D_lp;
-    if settings.investigate_pca
-        maxd2(1, 1) = res.maxd;
-        uv2(1, 1) = res.uv;
-    end
     
-    % reduce the precision of W
-    parameters.D = ESN.W;
-    parameters.mat = 'W';
-    res = set_precision(parameters);
-    ESN.W = res.D_lp;
-    if settings.investigate_pca
-        maxd2(1, 2) = res.maxd;
-        uv2(1, 2) = res.uv;
-    end
-    
-    
-    for i = 1:length(patterns)
-        if settings.plot_init_distr
-            subplot(220 + i)
-            hist(C.mat{i}(:), 40);
-            title(sprintf('Conceptor matrix %g', i));
-            xlabel('values');
-            ylabel('counts');
-        end
-        % reduce the precision of Ci
-        parameters.D = C.mat{i};
-        parameters.mat = strcat('C', int2str(i));
+    if settings.svd
+        % reduce the precision of the svd decomposition of Wout
+        [UWout SWout VWout] = svd(ESN.Wout);       
+        parameters.D = UWout;
         res = set_precision(parameters);
-        C.mat{i} = res.D_lp;
+        UWout = res.D_lp;
+        parameters.D = SWout;
+        res = set_precision(parameters);
+        SWout = res.D_lp;
+        parameters.D = VWout;
+        res = set_precision(parameters);
+        VWout = res.D_lp;
+        ESN.Wout = UWout*SWout*VWout';
+        
+        % reduce the precision of the svd decomposition of W
+        [UW SW VW] = svd(ESN.W);       
+        parameters.D = UW;
+        res = set_precision(parameters);
+        UW = res.D_lp;
+        parameters.D = SW;
+        res = set_precision(parameters);
+        SW = res.D_lp;
+        parameters.D = VW;
+        res = set_precision(parameters);
+        VW = res.D_lp;
+        ESN.W = UW*SW*VW';
+        
+        % reduce the precision of the svd decomposition of the C matrices
+        for i = 1:length(patterns)
+            [UCi SCi VCi] = svd(C.mat{i});
+            parameters.D = UCi;
+            res = set_precision(parameters);
+            UCi = res.D_lp;
+            parameters.D = SCi;
+            res = set_precision(parameters);
+            SCi = res.D_lp;
+            parameters.D = VCi;
+            res = set_precision(parameters);
+            VCi = res.D_lp;
+            C.mat{i} = UCi*SCi*VCi';
+        end
+        
+    else
+        % reduce the precision of Wout
+        parameters.D = ESN.Wout;
+        parameters.mat = 'Wout';
+        res = set_precision(parameters);
+        ESN.Wout = res.D_lp;
         if settings.investigate_pca
-            maxd2(1, 2 + i) = res.maxd;
-            uv2(1, 2 + i) = res.uv;
+            maxd2(1, 1) = res.maxd;
+            uv2(1, 1) = res.uv;
+        end
+        
+        % reduce the precision of W
+        parameters.D = ESN.W;
+        parameters.mat = 'W';
+        res = set_precision(parameters);
+        ESN.W = res.D_lp;
+        if settings.investigate_pca
+            maxd2(1, 2) = res.maxd;
+            uv2(1, 2) = res.uv;
+        end
+        
+        
+        for i = 1:length(patterns)
+            if settings.plot_init_distr
+                subplot(220 + i)
+                hist(C.mat{i}(:), 40);
+                title(sprintf('Conceptor matrix %g', i));
+                xlabel('values');
+                ylabel('counts');
+            end
+            % reduce the precision of Ci
+            parameters.D = C.mat{i};
+            parameters.mat = strcat('C', int2str(i));
+            res = set_precision(parameters);
+            C.mat{i} = res.D_lp;
+            if settings.investigate_pca
+                maxd2(1, 2 + i) = res.maxd;
+                uv2(1, 2 + i) = res.uv;
+            end
         end
     end
-    
     if settings.investigate_pca
         output.maxd = [maxd1, maxd2];
         output.uv = [uv1, uv2];

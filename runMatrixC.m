@@ -18,13 +18,15 @@ else
     settings.b = Inf; % i.e. full precison 
 end
 settings.svd = false; % True = reduce precision of the SVD decomposition of all targeted matrices
+                      % Note: The algorithms that work for the svd decomposition of the matrices
+                      % are 'set_precision_orig' and 'set_precision_distr1'.
 settings.plot_init_distr = false; % True = plot the initial distribution of all the weight and the conceptor matrices
-settings.plot_signals = false; % True = plot the output of the neural network on top of the training signals;
+settings.plot_signals = true; % True = plot the output of the neural network on top of the training signals;
 settings.plot_full = false; % True = plot signals & 2 neurons & the spectral radii of the correlation matrix of the internal units and of the conceptor matrices
 settings.plot_err_distr = true; % True = plot the distribution of the NRMSE over the specified number of runs
-settings.investigate_pca = true; % True = investigate the set_precision_pca alg, comapring it to set_precision_rand or set_precision_randunif
+settings.investigate_pca = false; % True = investigate the set_precision_pca alg, comapring it to set_precision_rand or set_precision_randunif
 settings.investigate_pca_rand = 'set_precision_rand'; % possible options: 'set_precision_rand' or 'set_precision_randunif'
-settings.no_runs = 10;
+settings.no_runs = 1;
 
 %% Run algorithm
 if settings.investigate_pca

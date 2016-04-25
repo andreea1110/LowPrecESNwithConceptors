@@ -66,31 +66,74 @@ if settings.red_prec % if we have to reduce the precision
     
     % reducing the precision of the matrices
     parameters.b = settings.b;
-    % reduce the precision of Win
-    parameters.D = ESN.Win;
-    res = set_precision(parameters);
-    ESN.Win = res.D_lp;
-    if settings.investigate_pca
-        maxd1(1, 1) = res.maxd;
-        uv1(1, 1) = res.uv;
-    end
     
-    % reduce the precision of Wbias
-    parameters.D = ESN.Wbias;
-    res = set_precision(parameters);
-    ESN.Wbias = res.D_lp;
-    if settings.investigate_pca
-        maxd1(1, 2) = res.maxd;
-        uv1(1, 2) = res.uv;
-    end
-    
-    % reduce the precision of Wstar
-    parameters.D = ESN.Wstar;
-    res = set_precision(parameters);
-    ESN.Wstar = res.D_lp;
-    if settings.investigate_pca
-        maxd1(1, 3) = res.maxd;
-        uv1(1, 3) = res.uv;
+    if settings.svd
+        % reduce the precision of the svd of Win
+        [UWin SWin VWin] = svd(ESN.Win);
+        parameters.D = UWin;
+        res = set_precision(parameters);
+        UWin = res.D_lp;
+        parameters.D = SWin;
+        res = set_precision(parameters);
+        SWin = res.D_lp;
+        parameters.D = VWin;
+        res = set_precision(parameters);
+        VWin = res.D_lp;
+        ESN.Win = UWin*SWin*VWin';
+        
+        % reduce the precision of the svd of Wbias
+        [UWbias SWbias VWbias] = svd(ESN.Wbias);
+        parameters.D = UWbias;
+        res = set_precision(parameters);
+        UWbias = res.D_lp;
+        parameters.D = SWbias;
+        res = set_precision(parameters);
+        SWbias = res.D_lp;
+        parameters.D = VWbias;
+        res = set_precision(parameters);
+        VWbias = res.D_lp;
+        ESN.Wbias = UWbias*SWbias*VWbias';
+        
+        % reduce the precision of the svd of Wstar
+        [UWstar SWstar VWstar] = svds(ESN.Wstar);
+        parameters.D = UWstar;
+        res = set_precision(parameters);
+        UWstar = res.D_lp;
+        parameters.D = SWstar;
+        res = set_precision(parameters);
+        SWstar = res.D_lp;
+        parameters.D = VWstar;
+        res = set_precision(parameters);
+        VWstar = res.D_lp;
+        ESN.Wstar = UWstar*SWstar*VWstar';
+           
+    else
+        % reduce the precision of Win
+        parameters.D = ESN.Win;
+        res = set_precision(parameters);
+        ESN.Win = res.D_lp;
+        if settings.investigate_pca
+            maxd1(1, 1) = res.maxd;
+            uv1(1, 1) = res.uv;
+        end
+        
+        % reduce the precision of Wbias
+        parameters.D = ESN.Wbias;
+        res = set_precision(parameters);
+        ESN.Wbias = res.D_lp;
+        if settings.investigate_pca
+            maxd1(1, 2) = res.maxd;
+            uv1(1, 2) = res.uv;
+        end
+        
+        % reduce the precision of Wstar
+        parameters.D = ESN.Wstar;
+        res = set_precision(parameters);
+        ESN.Wstar = res.D_lp;
+        if settings.investigate_pca
+            maxd1(1, 3) = res.maxd;
+            uv1(1, 3) = res.uv;
+        end
     end
 end
 %% Harvest data from network externally driven by the patterns
