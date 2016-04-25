@@ -3,36 +3,40 @@ function runMatrixC()
 %%% Set the desired method to reduce the bit precision of the parameters of
 %%% the ESN with conceptors below, set the number of runs and adjust the
 %%% plotting options and...press run. :-)
+%%% Note: running the network at full precision is also an option.
 %%% Possible ways to reduce the bit precision are:
 %%% ---> enumerate all the methods here + add a small description
 clear all;
 clc;
 
+%% Set options
 settings.red_prec = true; % true = reduce the precision of the weight and conceptor matrices; false = run the algorithm at full precision
-settings.red_prec_alg = 'set_precision_distr1';
+settings.red_prec_alg = 'set_precision_distr1'; % choose the desired algorithm for reducing the precision
 if settings.red_prec
     settings.b = 11; % the max number of unique values D_lp has; the actual max nr of values D_lp will have is 2*b + 1
 else
-    settings.b = Inf;
+    settings.b = Inf; % i.e. full precison 
 end
 settings.svd = false; % True = reduce precision of the SVD decomposition of all targeted matrices
 settings.plot_init_distr = false; % True = plot the initial distribution of all the weight and the conceptor matrices
 settings.plot_signals = false; % True = plot the output of the neural network on top of the training signals;
 settings.plot_full = false; % True = plot signals & 2 neurons & the spectral radii of the correlation matrix of the internal units and of the conceptor matrices
 settings.plot_err_distr = true; % True = plot the distribution of the NRMSE over the specified number of runs
-settings.investigate_pca = false;
+settings.investigate_pca = true; % True = investigate the set_precision_pca alg, comapring it to set_precision_rand or set_precision_randunif
+settings.investigate_pca_rand = 'set_precision_rand'; % possible options: 'set_precision_rand' or 'set_precision_randunif'
 settings.no_runs = 10;
 
+%% Run algorithm
 if settings.investigate_pca
+    settings.no_runs = 30;
     maxdvec = [];
     maxdvecRand = [];
     uvvecPCA = [];
     uvvecRand = [];
     NRMSEvec = zeros(1, settings.no_runs);
     NRMSEvec_rand = zeros(1, settings.no_runs);
-    settings.maxdvec = maxdvec;
-    settings.no_runs = 2;
-    
+    settings.maxdvec = maxdvec;   
+   
     settings.red_prec_alg = 'set_precision_pca';
     for i = 1:settings.no_runs
         tic;
@@ -59,7 +63,11 @@ if settings.investigate_pca
         end
     end
     
-    settings.red_prec_alg = 'set_precision_rand';
+    if strcmp(settings.investigate_pca_rand, 'set_precision_rand')
+        settings.red_prec_alg = 'set_precision_rand';
+    else
+        settings.red_prec_alg = 'set_precision_randunif';
+    end
     settings.maxdvec = maxdvec;
     for i = 1:settings.no_runs
         tic;

@@ -50,6 +50,8 @@ if settings.red_prec % if we have to reduce the precision
         set_precision = @set_precision_pca;
     elseif strcmp(settings.red_prec_alg, 'set_precision_rand')
         set_precision = @set_precision_rand;
+    elseif strcmp(settings.red_prec_alg, 'set_precision_randunif')
+        set_precision = @set_precision_rand;
     elseif strcmp(settings.red_prec_alg, 'set_precision_sc')
         set_precision = @set_precision_sc;
     else
@@ -58,7 +60,7 @@ if settings.red_prec % if we have to reduce the precision
     
     maxd1 = zeros(1, 3);
     uv1 = zeros(1, 3);
-    if settings.investigate_pca 
+    if settings.investigate_pca
         parameters.maxdvec = settings.maxdvec;
     end
     
@@ -76,7 +78,7 @@ if settings.red_prec % if we have to reduce the precision
     % reduce the precision of Wbias
     parameters.D = ESN.Wbias;
     res = set_precision(parameters);
-    ESN.Wbias = res.D_lp; 
+    ESN.Wbias = res.D_lp;
     if settings.investigate_pca
         maxd1(1, 2) = res.maxd;
         uv1(1, 2) = res.uv;
