@@ -38,6 +38,8 @@ ESN.Win = ESN.inputScaling * WinRaw;
 ESN.Wbias = ESN.biasScaling * WbiasRaw;
 
 %% Reduce the precision of the randomly initialized weight matrices
+maxd1 = zeros(1, 3);
+uv1 = zeros(1, 3);
 
 if settings.red_prec % if we have to reduce the precision
     % select the function which will be used in order to reduce the precision
@@ -58,8 +60,6 @@ if settings.red_prec % if we have to reduce the precision
         set_precision = @set_precision_id; % identity funtion => don't reduce the precision of those matrices
     end
     
-    maxd1 = zeros(1, 3);
-    uv1 = zeros(1, 3);
     if settings.investigate_pca
         parameters.maxdvec = settings.maxdvec;
     end
@@ -106,7 +106,7 @@ if settings.red_prec % if we have to reduce the precision
         res = set_precision(parameters);
         VWstar = res.D_lp;
         ESN.Wstar = UWstar*SWstar*VWstar';
-           
+        
     else
         % reduce the precision of Win
         parameters.D = ESN.Win;
