@@ -53,7 +53,7 @@ if settings.red_prec % if we have to reduce the precision
     elseif strcmp(settings.red_prec_alg, 'set_precision_rand')
         set_precision = @set_precision_rand;
     elseif strcmp(settings.red_prec_alg, 'set_precision_randunif')
-        set_precision = @set_precision_rand;
+        set_precision = @set_precision_randunif;
     elseif strcmp(settings.red_prec_alg, 'set_precision_sc')
         set_precision = @set_precision_sc;
     else
@@ -67,6 +67,7 @@ if settings.red_prec % if we have to reduce the precision
     % reducing the precision of the matrices
     parameters.b = settings.b;
     
+    settings.svd = false;
     if settings.svd
         % reduce the precision of the svd of Win
         [UWin SWin VWin] = svd(ESN.Win);
