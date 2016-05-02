@@ -90,6 +90,7 @@ if settings.red_prec % if we have to reduce the precision
     parameters.train_pPL = train_pPL;
     parameters.intRate = intRate;
     parameters.b = settings.b;
+    parameters.verbose = settings.verbose;
     
     
     if settings.svd
@@ -140,6 +141,7 @@ if settings.red_prec % if we have to reduce the precision
         parameters.mat = 'Wout';
         res = set_precision(parameters);
         ESN.Wout = res.D_lp;
+        parameters.ESN.Wout = ESN.Wout;
         if settings.investigate_pca
             maxd2(1, 1) = res.maxd;
             uv2(1, 1) = res.uv;
@@ -150,6 +152,7 @@ if settings.red_prec % if we have to reduce the precision
         parameters.mat = 'W';
         res = set_precision(parameters);
         ESN.W = res.D_lp;
+        parameters.ESN.W = ESN.W;
         if settings.investigate_pca
             maxd2(1, 2) = res.maxd;
             uv2(1, 2) = res.uv;
@@ -169,6 +172,7 @@ if settings.red_prec % if we have to reduce the precision
             parameters.mat = strcat('C', int2str(i));
             res = set_precision(parameters);
             C.mat{i} = res.D_lp;
+            parameters.C.mat{i} = C.mat{i};
             if settings.investigate_pca
                 maxd2(1, 2 + i) = res.maxd;
                 uv2(1, 2 + i) = res.uv;

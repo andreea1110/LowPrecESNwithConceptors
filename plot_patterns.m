@@ -1,7 +1,6 @@
 function plot_patterns(patternsInt, netOutputInt, t, plotLength, meanNRMSE, train_xPL, neuronNr1, neuronNr2, SRcollector, C, settings)
 %ploting the reference signal versus the ESN output
 k = size(patternsInt, 1);
-
 if settings.plot_full
     k = size(patternsInt, 1);
     for i = 1:k
