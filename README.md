@@ -19,3 +19,4 @@ The following functions are not my personal contribution:
   
   > The @sympoly folder contains the Symbolic Polynomial Manipulation toolbox, by John D'Errico, downloaded from http://de.mathworks.com/matlabcentral/fileexchange/9577-symbolic-polynomial-manipulation .
  
+ Many thanks to Professor Herbert Jaeger for providing me his initial implementation of a ESN with conceptors, which served as a basis and model for my implementation.
