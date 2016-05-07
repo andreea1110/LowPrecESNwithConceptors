@@ -6,6 +6,7 @@ set(gca,'fontsize',fontsize);
 hold on;
 x = 1:length(NRMSEvec);
 [AX,H1,H2] = plotyy(x, NRMSEvec, x, sum(reshape(uvvecPCA, 9, noRuns), 1),'plot');
+%disp(cov(NRMSEvec, sum(reshape(uvvecPCA, 9, noRuns), 1)));
 c = cov(NRMSEvec, sum(reshape(uvvecPCA, 9, noRuns), 1));
 set(AX,'fontsize',fontsize);
 set(get(AX(1),'Ylabel'),'String','NRMSE','fontsize',fontsize) 
@@ -18,6 +19,19 @@ xlabel('runs')
 %legend('NRMSE', 'sum no. uniq. el')
 saveas(f, 'images/errNoVals.png', 'png')
 saveas(f, 'images/errNoVals.fig', 'fig')
+
+% plot error vs. average precision from each matrix precision 
+f = figure(); clf;
+set(gca,'fontsize',fontsize);
+hold on;
+scatter(NRMSEvec, log2(sum(reshape(uvvecPCA, 9, noRuns), 1)/9) ,'filled');
+xlabel('NRMSE');
+ylabel('average precision [bits]');
+c = cov(NRMSEvec, log2(sum(reshape(uvvecPCA, 9, noRuns), 1)/9));
+title(sprintf('Precision vs. NRMSE for %g runs, cov = %g', noRuns, c(2, 1)));
+saveas(f, 'images/errorVsPrecision.png', 'png');
+saveas(f, 'images/errorVsPrecision.fig', 'fig');
+
 
 % look at the distribution of the maxd values for pca
 f = figure(); clf;

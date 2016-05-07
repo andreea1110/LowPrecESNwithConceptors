@@ -173,7 +173,8 @@ for i = 1:k % for each of the input patterns
 end
 
 %% Compute output weights using ridge regression
-ESN.Wout = ((x_AllTrain * x_AllTrain' + ESN.regWout * I)\x_AllTrain * y_AllTrain')';
+ESN.Wout = (pinv(x_AllTrain * x_AllTrain' + ESN.regWout * I)* x_AllTrain * y_AllTrain')';
+%ESN.Wout = ((x_AllTrain * x_AllTrain' + ESN.regWout * I)\x_AllTrain * y_AllTrain')';
 % training error
 NRMSE_readout = nrmse(ESN.Wout*x_AllTrain, y_AllTrain);
 
@@ -181,7 +182,8 @@ NRMSE_readout = nrmse(ESN.Wout*x_AllTrain, y_AllTrain);
 Wtargets = atanh(x_AllTrain) - repmat(ESN.Wbias,1,k*ESN.learnLength);
 x_AllTrainOld = [zeros(ESN.DR.size, 1), x_AllTrain]; % ???
 x_AllTrainOld(:, end) = [];
-ESN.W = ((x_AllTrainOld * x_AllTrainOld' + ESN.regW * I)\x_AllTrainOld * Wtargets')';
+ESN.W = (pinv(x_AllTrainOld * x_AllTrainOld' + ESN.regW * I)*x_AllTrainOld * Wtargets')';
+%ESN.W = ((x_AllTrainOld * x_AllTrainOld' + ESN.regW * I)\x_AllTrainOld * Wtargets')';
 % training errors per neuron
 NRMSE_W = nrmse(ESN.W*x_AllTrainOld, Wtargets);
 
@@ -190,7 +192,8 @@ C.mat = cell(1, k);
 C.s = cell(1, k);
 for i = 1:k % iterating through the patterns
     R = Rcollector{i}; % retrieve the corresponding correlation matrix
-    C.mat{i} = R / (R + (C.aperture)^(-2) * I);
+    C.mat{i} = R * pinv(R + (C.aperture)^(-2) * I);
+    %C.mat{i} = R / (R + (C.aperture)^(-2) * I);
     [U S V] = svd(C.mat{i});
     C.s{i} = S;
 end

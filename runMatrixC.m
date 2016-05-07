@@ -5,15 +5,20 @@ function runMatrixC()
 %%% plotting options and...press run. :-)
 %%% Note: running the network at full precision is also an option.
 %%% Possible ways to reduce the bit precision are:
-%%% set_precision_orig  = 
-%%% set_precision_distr1 = 
-%%% set_precision_distr2 = 
-%%% set_precision_pca = 
-%%% set_precision_randunif =
-%%% set_precision_exsearch = 
+%%% set_precision_orig = bounding the numerical precision of the paramters
+%%%                      to b linearly spaced values
+%%% set_precision_distr1 = an algorithm based on value distributions
+%%% set_precision_distr2 = another algorithm based on value distributions
+%%% set_precision_pca = an algorithm based on principal component analysis
+%%% set_precision_randunif = bounding the numerical precision of the ESN
+%%%                          parameters, selecting the discretization element randomly from a
+%%%                          uniform distribution on (0, 1)
+%%% set_precision_exsearch = reduce the precision of the weight and conceptor matrices of the ESN to 3 values -c, 0, c, where
+%%%                          c is determined by exhaustive search
+%%% set_precision_ga = reduce the precision of the weight and conceptor matrices of the ESN to 3 values -c, 0, c, where
+%%%                    c is determined by a genetic algorithm
 clear all;
 clc;
-
 %% Set options
 settings.red_prec = true; % true = reduce the precision of the weight and conceptor matrices; false = run the algorithm at full precision
 settings.red_prec_alg = 'set_precision_pca'; % choose the desired algorithm for reducing the precision
@@ -31,12 +36,12 @@ settings.plot_full = false; % True = plot signals & 2 neurons & the spectral rad
 settings.plot_err_distr = true; % True = plot the distribution of the NRMSE over the specified number of runs
 settings.investigate_pca = true; % True = investigate the set_precision_pca alg, comapring it to set_precision_rand or set_precision_randunif
 settings.investigate_pca_rand = 'set_precision_rand'; % possible options: 'set_precision_rand' or 'set_precision_randunif'
-settings.verbose = true; % for exhaustive search
-settings.no_runs = 3;
+settings.verbose = false; % for exhaustive search
+settings.no_runs = 10;
 
 %% Run algorithm
 if settings.investigate_pca
-    settings.no_runs = 3;
+    settings.no_runs = 2;
     maxdvec = [];
     maxdvecRand = [];
     uvvecPCA = [];
@@ -97,8 +102,10 @@ if settings.investigate_pca
 else
     % if we don't investigate the pca algorithm
     NRMSEvec = zeros(1, settings.no_runs);
-    for i = 1:settings.no_runs
+    for i = 1:settings.no_runs  
         tic;
+        randn('state', i + 1);
+        rand('state',  i + 1);
         fprintf('run #%g/%g\n', i, settings.no_runs);
         output =  main_matrixC(settings);
         NRMSEvec(i) = output.meanNRMSE;
@@ -127,6 +134,7 @@ else
     fprintf('Variance meanNRMSE %g\n', var(NRMSEvec));
     fprintf('Standard deviation meanNRMSE %g\n', std(NRMSEvec));
     
+    save(strcat('variables/NRMSE_', settings.red_prec_alg, '.mat'), 'NRMSEvec');
     % look at the distribution of testing errors
     if settings.plot_err_distr
         f = figure(); clf;

@@ -53,6 +53,8 @@ if settings.red_prec % if we have to reduce the precision
     elseif strcmp(settings.red_prec_alg, 'set_precision_rand')
         set_precision = @set_precision_rand;
         parameters.maxdvec = settings.maxdvec;
+    elseif strcmp(settings.red_prec_alg, 'set_precision_ga')
+        set_precision = @set_precision_ga;
     elseif strcmp(settings.red_prec_alg, 'set_precision_randunif')
         set_precision = @set_precision_randunif;
         parameters.maxdvec = settings.maxdvec;
@@ -69,6 +71,7 @@ if settings.red_prec % if we have to reduce the precision
         ylabel('counts')
         
         figure();
+        disp(ESN.W);
         hist(ESN.W(:), 40);
         title('ESN.W');
         xlabel('values')

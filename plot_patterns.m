@@ -45,11 +45,12 @@ else
     f = figure(); clf;
     for i = 1:k
         subplot(2, 2, i);
-        set(gca,'fontsize',12);
+        set(gca,'fontsize',10);
         hold on;
         plot(t, patternsInt(i, 1:size(t, 2)), 'b', 'Linewidth', 2);
         hold on;
         plot(t, netOutputInt(i, 1:size(t, 2)), 'r--', 'Linewidth', 2);
+        %title(sprintf('NRMSE: %g', NRMSE_vec(i)));
         xlim([1, plotLength]);
         xlabel('Time [time units]')
         ylabel('Signal [signal units]')
