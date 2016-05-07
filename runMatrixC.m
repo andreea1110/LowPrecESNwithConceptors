@@ -20,8 +20,8 @@ function runMatrixC()
 clear all;
 clc;
 %% Set options
-settings.red_prec = true; % true = reduce the precision of the weight and conceptor matrices; false = run the algorithm at full precision
-settings.red_prec_alg = 'set_precision_pca'; % choose the desired algorithm for reducing the precision
+settings.red_prec = false; % true = reduce the precision of the weight and conceptor matrices; false = run the algorithm at full precision
+settings.red_prec_alg = 'set_precision_exsearch'; % choose the desired algorithm for reducing the precision
 if settings.red_prec
     settings.b = 4; % the max number of unique values D_lp has; the actual max nr of values D_lp will have is 2*b + 1
 else
@@ -31,17 +31,18 @@ settings.svd = false; % True = reduce precision of the SVD decomposition of all 
                       % Note: The algorithms that work for the svd decomposition of the matrices
                       % are 'set_precision_orig' and 'set_precision_distr1'.
 settings.plot_init_distr = false; % True = plot the initial distribution of all the weight and the conceptor matrices
-settings.plot_signals = false; % True = plot the output of the neural network on top of the training signals;
+settings.plot_signals = true; % True = plot the output of the neural network on top of the training signals;
 settings.plot_full = false; % True = plot signals & 2 neurons & the spectral radii of the correlation matrix of the internal units and of the conceptor matrices
-settings.plot_err_distr = true; % True = plot the distribution of the NRMSE over the specified number of runs
-settings.investigate_pca = true; % True = investigate the set_precision_pca alg, comapring it to set_precision_rand or set_precision_randunif
+settings.plot_err_distr = false; % True = plot the distribution of the NRMSE over the specified number of runs
+settings.investigate_pca = false; % True = investigate the set_precision_pca alg, comapring it to set_precision_rand or set_precision_randunif
 settings.investigate_pca_rand = 'set_precision_rand'; % possible options: 'set_precision_rand' or 'set_precision_randunif'
 settings.verbose = false; % for exhaustive search
-settings.no_runs = 10;
+settings.set_seed = false; % True = set the seed for each run => leads to repeatable random initializations.
+settings.no_runs = 1;
 
 %% Run algorithm
 if settings.investigate_pca
-    settings.no_runs = 2;
+    settings.no_runs = 1000;
     maxdvec = [];
     maxdvecRand = [];
     uvvecPCA = [];
@@ -104,8 +105,10 @@ else
     NRMSEvec = zeros(1, settings.no_runs);
     for i = 1:settings.no_runs  
         tic;
-        randn('state', i + 1);
-        rand('state',  i + 1);
+        if settings.set_seed
+            randn('state', i + 1);
+            rand('state',  i + 1);
+        end
         fprintf('run #%g/%g\n', i, settings.no_runs);
         output =  main_matrixC(settings);
         NRMSEvec(i) = output.meanNRMSE;
